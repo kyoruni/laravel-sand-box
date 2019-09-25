@@ -55,4 +55,22 @@ class BooksController extends Controller
         }
         return view('books.index',compact('books'));
     }
+
+    public function store(Request $request) {
+        $request = json_decode($request['book'],true);
+
+        $title     = $request['title'];
+        $imageUrl  = $request['imageUrl'];
+        $url       = $request['url'];
+        $publisher = $request['publisher'];
+        $author    = $request['author'];
+
+        $book = Book::firstOrCreate( ['title' => $title ],[
+            'imageUrl'  => $imageUrl,
+            'url'       => $url,
+            'publisher' => $publisher,
+            'author'    => $author
+        ]);
+        return redirect('/');
+    }
 }

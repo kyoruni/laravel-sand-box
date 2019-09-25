@@ -12,6 +12,10 @@
         <img src="{{ $book->imageUrl }}">
         <p>{{ $book->publisher }}</p>
         <p>{{ $book->author }}</p>
+        {{Form::open(['method' => 'post'])}}
+            {{Form::hidden('book', $book )}}
+            {{Form::submit('登録', ['class'=>'submit'])}}
+        {{Form::close()}}
     @endforeach
 
 @endsection
