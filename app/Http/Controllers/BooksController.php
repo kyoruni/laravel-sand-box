@@ -8,42 +8,47 @@ use \App\Book;
 class BooksController extends Controller
 {
     public function index() {
-        $keyword = urlencode("どうぶつの森");
-        $data = "https://www.googleapis.com/books/v1/volumes?q=intitle:${keyword}&maxResults=2&country=JP&orderBy=newest";
-        $json         = file_get_contents($data);
-        $json_decode  = json_decode($json,true);
+        // 入力された検索ワードをurlエンコード
+        $items   = array();
+        $keyword = request()->keyword;
+        $keyword = urlencode($keyword);
 
-        $items = array();
-        $json_decode = $json_decode['items'];
-        foreach ($json_decode as $item) {
-            $title     = '';
-            $imageUrl  = '';
-            $url       = '';
-            $publisher = '';
-            $authors   = '';
-            $author    = '';
+        // 検索ワードがあれば、検索処理を開始
+        if ($keyword) {
+            $data = "https://www.googleapis.com/books/v1/volumes?q=intitle:${keyword}&maxResults=2&country=JP&orderBy=newest";
+            $json         = file_get_contents($data);
+            $json_decode  = json_decode($json,true);
+            $json_decode  = $json_decode['items'];
 
-            $title     = $item['volumeInfo']['title'];
-            $imageUrl  = $item['volumeInfo']['imageLinks']['thumbnail'];
-            $url       = $item['volumeInfo']['infoLink'];
+            foreach ($json_decode as $item) {
+                $title     = '';
+                $imageUrl  = '';
+                $url       = '';
+                $publisher = '';
+                $authors   = '';
+                $author    = '';
 
-            if (isset($item['volumeInfo']['publisher'])) {
-                $publisher = $item['volumeInfo']['publisher'];
+                $title     = $item['volumeInfo']['title'];
+                $imageUrl  = $item['volumeInfo']['imageLinks']['thumbnail'];
+                $url       = $item['volumeInfo']['infoLink'];
+
+                // 必須ではない項目は、存在する場合のみ取得
+                if (isset($item['volumeInfo']['publisher'])) {
+                    $publisher = $item['volumeInfo']['publisher'];
+                }
+                if (isset($item['volumeInfo']['authors'])) {
+                    $authors   = $item['volumeInfo']['authors'];
+                    $author    = implode(',', $authors);
+                }
+
+                // 扱いやすいように分解して渡す
+                $items[]   =  array('title'     => $title,
+                                    'imageUrl'  => $imageUrl,
+                                    'url'       => $url,
+                                    'publisher' => $publisher,
+                                    'author'    => $author);
             }
-
-            if (isset($item['volumeInfo']['authors'])) {
-                $authors   = $item['volumeInfo']['authors'];
-                $author    = implode(',', $authors);
-            }
-
-            $items[]   =  array('title'     => $title,
-                                'imageUrl'  => $imageUrl,
-                                'url'       => $url,
-                                'publisher' => $publisher,
-                                'author'    => $author);
         }
-        dump("items");
-        dump($items);
         return view('books.index',compact('items'));
     }
 }
