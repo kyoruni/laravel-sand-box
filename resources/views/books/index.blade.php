@@ -7,11 +7,11 @@
         {{Form::submit('送信', ['class'=>'submit'])}}
     {{Form::close()}}
 </div>
-    @foreach($items as $item)
-        <p>{{ $item['title'] }}</p>
-        <img src="{{ $item['imageUrl'] }}">
-        <p>{{ $item['publisher'] }}</p>
-        <p>{{ $item['author'] }}</p>
+    @foreach($books as $book)
+        <p>{{ $book->title }}</p>
+        <img src="{{ $book->imageUrl }}">
+        <p>{{ $book->publisher }}</p>
+        <p>{{ $book->author }}</p>
     @endforeach
 
 @endsection

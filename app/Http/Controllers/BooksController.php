@@ -8,8 +8,10 @@ use \App\Book;
 class BooksController extends Controller
 {
     public function index() {
+        // 検索結果をまとめて格納するための配列
+        $books   = [];
+
         // 入力された検索ワードをurlエンコード
-        $items   = array();
         $keyword = request()->keyword;
         $keyword = urlencode($keyword);
 
@@ -42,13 +44,15 @@ class BooksController extends Controller
                 }
 
                 // 扱いやすいように分解して渡す
-                $items[]   =  array('title'     => $title,
-                                    'imageUrl'  => $imageUrl,
-                                    'url'       => $url,
-                                    'publisher' => $publisher,
-                                    'author'    => $author);
+                $book            = new Book();
+                $book->title     = $title;
+                $book->imageUrl  = $imageUrl;
+                $book->url       = $url;
+                $book->publisher = $publisher;
+                $book->author    = $author;
+                $books[]         = $book;
             }
         }
-        return view('books.index',compact('items'));
+        return view('books.index',compact('books'));
     }
 }
