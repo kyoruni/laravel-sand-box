@@ -16,3 +16,4 @@
 // });
 
 Route::get('/', 'BooksController@index');
+Route::resource('books', 'booksController', ['only' => ['index', 'store']]);
